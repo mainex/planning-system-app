@@ -1,0 +1,487 @@
+planningsystemapi: 1.0.0
+info:
+  title: Planning System API
+  version: 1.0.0 
+  description: API for managing users, organaziers and events for planning system.
+
+servers:
+  - url: http://localhost:3000
+    description: Local server
+
+paths:
+  api/user/create:
+    post: 
+      summary: Create user.
+      description: Creates a new user.
+
+      requestBody:
+        required: True
+        content:
+          application/json:
+            example:
+              username: jsmith
+              firstname: John
+              lastname: Smith
+
+      responses: 
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                username: jsmith
+                firstname: John
+                lastname: Smith
+        '422':
+          description: Any of the parameters are invalid or missing.
+  
+  api/user/{id}:
+    get:
+      summary: Get user.
+      description: Retrieves data for a user.
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          required: True
+          description: User's identificator.
+      
+      responses:
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                id: 123
+                username: RWatson
+                firstname: Robert
+                lastname: Watson
+        '422':
+          description: ID is invalid.
+        '409':
+          description: Item with this ID does not exist.
+  
+  api/user/delete:
+    delete:
+      summary: Delete user.
+      description: Deletes a user.
+
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            format: int64
+          required: True
+          description: User's identificator.
+      
+      responses:
+        '200': 
+          description: Success return.
+        '422':
+          description: ID is invalid or the item could not be deleted.
+        '404':
+          description: An item with this ID does not exist.
+
+  api/user/update:
+    put: 
+      summary: Update user.
+      description: Updates a user’s details.
+
+      requestBody:
+        required: True
+        content:
+          application/json:
+            example:
+              id: 123
+              username: jsmith
+              firstname: John
+              lastname: Smith
+
+      responses: 
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                id: 123
+                username: jsmith
+                firstname: John
+                lastname: Smith
+        '422':
+          description: Any of the parameters are invalid or missing.
+        '404':
+          description: An item with this ID does not exist.
+  
+  api/user:
+    get:
+      summary: List users.
+      description: Lists all users.
+
+      parameters:
+        - in: query
+          name: eventID
+          schema:
+            type: integer
+            format: int64
+          required: False
+          description: Event's identificator. If provided, only users with reservations to that event should be returned.
+      
+      responses:
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                - id: 123
+                  username: RWatson
+                  firstname: Robert
+                  lastname: Watson
+                - id: 124
+                  username: HPotter
+                  firstname: Harry
+                  lastname: Potter
+        '422':
+          description: eventID is invalid.
+
+  api/organizer/create:
+    post: 
+      summary: Create organizer.
+      description: Creates a new event organizer.
+
+      requestBody:
+        required: True
+        content:
+          application/json:
+            example:
+              name: Radisson Blu
+
+      responses: 
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                name: Radisson Blu
+        '422':
+          description: Any of the parameters are invalid or missing.
+        '409':
+          description: An organizer with the same name already exists.
+  
+  api/organizer/delete:
+    delete:
+      summary: Delete organizer.
+      description: Deletes an event organizer.
+
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            format: int64
+          required: True
+          description: Organizer's identificator.
+      
+      responses:
+        '200': 
+          description: Success return.
+        '422':
+          description: ID is invalid or the item could not be deleted.
+        '404':
+          description: An item with this ID does not exist.
+
+  api/organizer:
+    get:
+      summary: List organizers.
+      description: Lists event organizers.
+
+      parameters:
+        - in: query
+          name: hasEvents
+          schema:
+            type: boolean
+          required: False
+          description: When provided, only organizers which have scheduled events should be returned.
+      
+      responses:
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: Radisson Blu
+                - id: 2
+                  name: Logicom
+
+  api/event-type/create:
+    post: 
+      summary: Create event type.
+      description: Creates a new event type.
+
+      requestBody:
+        required: True
+        content:
+          application/json:
+            example:
+              name: Conference
+
+      responses: 
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                name: Conference
+        '422':
+          description: Any of the parameters are invalid or missing.
+        '409':
+          description: A module with the specified code already exists.
+
+  api/event-type/delete:
+    delete:
+      summary: Delete event type.
+      description: Deletes an event type.
+
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            format: int64
+          required: True
+          description: Event type's identificator.
+      
+      responses:
+        '200': 
+          description: Success return.
+        '422':
+          description: ID is invalid or the item could not be deleted.
+        '404':
+          description: An item with this ID does not exist.
+
+  api/event-type:
+    get:
+      summary: List event types.
+      description: Lists event types.
+
+      responses:
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: Conference
+                - id: 2
+                  name: Workshop
+                - id: 3
+                  name: Sports event
+  
+  api/event/create:
+    post: 
+      summary: Create event.
+      description: Creates a new event.
+
+      requestBody:
+        required: True
+        content:
+          application/json:
+            example:
+              eventTypeID: 3,
+              organizerID: 3,
+              name: Radisson Blu Larnaka International Marathon,
+              price: 30,
+              dateTime: 1731835800,
+              locationLatitude: 34.915147,
+              locationLongitude: 33.638146,
+              maxParticipants: 200
+
+      responses: 
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                eventTypeID: 3,
+                organizerID: 3,
+                name: Radisson Blu Larnaka International Marathon,
+                price: 30,
+                dateTime: 1731835800,
+                locationLatitude: 34.915147,
+                locationLongitude: 33.638146,
+                maxParticipants: 200
+        '422':
+          description: Any of the parameters are invalid or missing.
+
+  api/event/delete:
+    delete:
+      summary: Delete event.
+      description: Deletes an event.
+
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            format: int64
+          required: True
+          description: Event's identificator.
+      
+      responses:
+        '200': 
+          description: Success return.
+        '422':
+          description: ID is invalid or the item could not be deleted.
+        '404':
+          description: An item with this ID does not exist.
+
+  api/event/{id}:
+    get:
+      summary: Get event.
+      description: Retrieves an event.
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          required: True
+          description: Event's identificator.
+      
+      responses:
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                id: 1
+                eventTypeID: 3,
+                organizerID: 3,
+                name: Radisson Blu Larnaka International Marathon,
+                price: 30,
+                dateTime: 1731835800,
+                locationLatitude: 34.915147,
+                locationLongitude: 33.638146,
+                maxParticipants: 200
+        '422':
+          description: ID is invalid.
+        '409':
+          description: Item with this ID does not exist.
+  
+  api/event/update:
+    put: 
+      summary: Update event.
+      description: Updates an event's details.
+
+      requestBody:
+        required: True
+        content:
+          application/json:
+            example:
+              eventTypeID: 3,
+              organizerID: 3,
+              name: Radisson Blu Larnaka International Marathon,
+              price: 30,
+              dateTime: 1731835800,
+              locationLatitude: 34.915147,
+              locationLongitude: 33.638146,
+              maxParticipants: 200
+
+      responses: 
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                eventTypeID: 3,
+                organizerID: 3,
+                name: Radisson Blu Larnaka International Marathon,
+                price: 30,
+                dateTime: 1731835800,
+                locationLatitude: 34.915147,
+                locationLongitude: 33.638146,
+                maxParticipants: 200
+        '422':
+          description: Any of the parameters are invalid or missing.
+        '404':
+          description: An item with this ID does not exist.
+  
+  api/reservation/create:
+    post: 
+      summary: Create reservation.
+      description: Creates a reservation.
+
+      requestBody:
+        required: True
+        content:
+          application/json:
+            example:
+              eventID: 123
+              userID: 1
+
+      responses: 
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                eventID: 123
+                userID: 1
+        '422':
+          description: Any of the parameters are invalid format, or the constraints are not met correctly, or if there aren’t enough slots available to make the reservationor missing.
+        '404':
+          description: An item with a specified ID does not exist.
+  
+  api/reservation/{id}:
+    get:
+      summary: Get reservation.
+      description: Retrieves a reservation.
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: int64
+          required: True
+          description: Reservation's identificator.
+      
+      responses:
+        '200':
+          description: Success return.
+          content:
+            application/json:
+              example:
+                eventID: 123
+                userID: 1
+        '422':
+          description: ID is invalid.
+        '409':
+          description: Item with this ID does not exist.
+  
+  api/reservation/delete:
+    delete:
+      summary: Delete reservation.
+      description: Deletes a reservation.
+
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            format: int64
+          required: True
+          description: Reservation's identificator.
+      
+      responses:
+        '200': 
+          description: Success return.
+        '422':
+          description: ID is invalid or the item could not be deleted.
+        '404':
+          description: An item with this ID does not exist.
